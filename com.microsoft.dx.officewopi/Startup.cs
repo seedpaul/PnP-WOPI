@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Owin;
-using Owin;
+﻿using Owin;
+using Microsoft.IdentityModel.Logging;
 
 namespace com.microsoft.dx.officewopi
 {
@@ -9,6 +7,7 @@ namespace com.microsoft.dx.officewopi
     {
         public void Configuration(IAppBuilder app)
         {
+            IdentityModelEventSource.ShowPII = true;
             ConfigureAuth(app);
         }
     }

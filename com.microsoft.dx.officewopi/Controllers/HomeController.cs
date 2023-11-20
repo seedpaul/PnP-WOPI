@@ -2,11 +2,9 @@
 using com.microsoft.dx.officewopi.Models.Wopi;
 using com.microsoft.dx.officewopi.Security;
 using com.microsoft.dx.officewopi.Utils;
-using Microsoft.Owin.Security.OAuth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -23,13 +21,13 @@ namespace com.microsoft.dx.officewopi.Controllers
         public async Task<ActionResult> Index()
         {
             // Get files for the user
-            var files = DocumentDBRepository<DetailedFileModel>.GetItems("Files", i => i.OwnerId == User.Identity.Name.ToLower()).ToList();
+            var filesSQL = AzureSQLUtil.GetItems(User.Identity.Name.ToLower());
 
             // Populate valid actions for each of the files
-            await files.PopulateActions();
+            await filesSQL.PopulateActions();
 
             // Return the view with the files
-            return View(files);
+            return View(filesSQL);
         }
 
         /// <summary>
@@ -43,27 +41,26 @@ namespace com.microsoft.dx.officewopi.Controllers
             if (String.IsNullOrEmpty(Request["action"]))
                 return RedirectToAction("Error", "Home", new { error = "No action provided" });
 
-            // Get the specific file from DocumentDB
-            var file = DocumentDBRepository<FileModel>.GetItem("Files",
-                i => i.OwnerId == User.Identity.Name.ToLower() && i.id == id);
+            // Get the specific file from SQLDB
+             var fileBlob = AzureSQLUtil.GetBlob(id.ToString(), User.Identity.Name.ToLower());
 
             // Check for null file
-            if (file == null)
+            if (fileBlob == null)
                 return RedirectToAction("Error", "Home", new { error = "Files does not exist" });
 
             // Use discovery to determine endpoint to leverage
             List<WopiAction> discoData = await WopiUtil.GetDiscoveryInfo();
-            var fileExt = file.BaseFileName.Substring(file.BaseFileName.LastIndexOf('.') + 1).ToLower();
+            var fileExt = "docx";
             var action = discoData.FirstOrDefault(i => i.name == Request["action"] && i.ext == fileExt);
 
             // Make sure the action isn't null
             if (action != null)
             {
-                string urlsrc = WopiUtil.GetActionUrl(action, file, Request.Url.Authority);
+                string urlsrc = WopiUtil.GetActionUrl(action, id.ToString(), Request.Url.Authority);
 
                 // Generate JWT token for the user/document
                 WopiSecurity wopiSecurity = new WopiSecurity();
-                var token = wopiSecurity.GenerateToken(User.Identity.Name.ToLower(), getUserContainer(), id.ToString());
+                var token = wopiSecurity.GenerateToken(User.Identity.Name.ToLower(), id.ToString());
                 ViewData["access_token"] = wopiSecurity.WriteToken(token);
                 ViewData["access_token_ttl"] = token.ValidTo.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
                 ViewData["wopi_urlsrc"] = urlsrc;
@@ -92,8 +89,7 @@ namespace com.microsoft.dx.officewopi.Controllers
                     OwnerId = User.Identity.Name.ToLower(),
                     BaseFileName = HttpUtility.UrlDecode(Request["HTTP_X_FILE_NAME"]),
                     Size = Convert.ToInt32(Request["HTTP_X_FILE_SIZE"]),
-                    Container = getUserContainer(),
-                    Version = 1
+                    Version = "1"
                 };
 
                 // Populate valid actions for each of the files
@@ -103,10 +99,7 @@ namespace com.microsoft.dx.officewopi.Controllers
                 var stream = Request.InputStream;
                 var bytes = new byte[stream.Length];
                 await stream.ReadAsync(bytes, 0, (int)stream.Length);
-                var id = await Utils.AzureStorageUtil.UploadFile(file.id.ToString(), file.Container, bytes);
-
-                // Write the details into documentDB
-                await DocumentDBRepository<FileModel>.CreateItemAsync("Files", (FileModel)file);
+                await AzureSQLUtil.UploadFile(file.id.ToString(), bytes, file.BaseFileName, User.Identity.Name.ToLower(),"1");
 
                 // Return json representation of information
                 return Json(new { success = true, file = file });
@@ -123,19 +116,13 @@ namespace com.microsoft.dx.officewopi.Controllers
         /// </summary>
         [HttpDelete]
         [Authorize]
-        [Route("Home/Delete/{id}")]
+        [Route("Home/Delete/{id}{version}")]
         public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
-                // Get the file from DocumentDB
-                var file = DocumentDBRepository<FileModel>.GetItem("Files", i => i.id == id);
-
-                // Delete the record from DocumentDB
-                await DocumentDBRepository<FileModel>.DeleteItemAsync("Files", file.id.ToString(), file);
-
-                // Delete the blob
-                await Utils.AzureStorageUtil.DeleteFile(file.id.ToString(), file.Container);
+                // Delete the file from sql db;
+                await Utils.AzureSQLUtil.DeleteFile(id.ToString());
 
                 //return json representation of information
                 return Json(new { success = true, id = id.ToString() });
@@ -156,12 +143,5 @@ namespace com.microsoft.dx.officewopi.Controllers
             return View();
         }
 
-        /// <summary>
-        /// Simple function to correctly form a container name based on the signed in user
-        /// </summary>
-        private string getUserContainer()
-        {
-            return User.Identity.Name.Replace("@", "-").Replace(".", "-");
-        }
     }
 }

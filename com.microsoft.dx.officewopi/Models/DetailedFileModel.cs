@@ -1,10 +1,6 @@
 ﻿using com.microsoft.dx.officewopi.Models.Wopi;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace com.microsoft.dx.officewopi.Models
 {
@@ -19,6 +15,9 @@ namespace com.microsoft.dx.officewopi.Models
     {
         [JsonProperty(PropertyName = "UserId")]
         public string UserId { get; set; }
+
+        [JsonProperty(PropertyName = "UserFriendlyName")]
+        public string UserFriendlyName { get; set; }
 
         [JsonProperty(PropertyName = "CloseUrl")]
         public string CloseUrl { get; set; }
@@ -38,7 +37,7 @@ namespace com.microsoft.dx.officewopi.Models
         [JsonProperty(PropertyName = "SupportsExtendedLockLength")]
         public bool SupportsExtendedLockLength
         {
-            get { return false; }
+            get { return true; }
         }
 
         [JsonProperty(PropertyName = "SupportsFileCreation")]
@@ -91,6 +90,24 @@ namespace com.microsoft.dx.officewopi.Models
 
         [JsonProperty(PropertyName = "SupportsUserInfo")]
         public bool SupportsUserInfo
+        {
+            get { return true; }
+        }
+
+        [JsonProperty(PropertyName = "SupportsDeleteFile")]
+        public bool SupportsDeleteFile
+        {
+            get { return true; }
+        }
+
+        [JsonProperty(PropertyName = "SupportsContainers")]
+        public bool SupportsContainers
+        {
+            get { return true; }
+        }
+
+        [JsonProperty(PropertyName = "SupportsAddActivities")]
+        public bool SupportsAddActivities
         {
             get { return true; }
         }

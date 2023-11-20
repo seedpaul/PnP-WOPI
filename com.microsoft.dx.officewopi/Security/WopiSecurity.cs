@@ -1,15 +1,11 @@
 ﻿using com.microsoft.dx.officewopi.Utils;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
 using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace com.microsoft.dx.officewopi.Security
 {
@@ -37,8 +33,11 @@ namespace com.microsoft.dx.officewopi.Security
                 // Try to validate the token
                 SecurityToken token = null;
                 var principal = tokenHandler.ValidateToken(tokenString, tokenValidation, out token);
-                return (principal.HasClaim("container", container) &&
-                    principal.HasClaim("docid", docId));
+
+                //return (principal.HasClaim("container", container) &&
+                //    principal.HasClaim("docid", docId));
+
+                return principal.HasClaim("docid", docId);
             }
             catch (Exception)
             {
@@ -81,7 +80,7 @@ namespace com.microsoft.dx.officewopi.Security
         /// <summary>
         /// Generates an access token for the user and file
         /// </summary>
-        public JwtSecurityToken GenerateToken(string user, string container, string docId)
+        public JwtSecurityToken GenerateToken(string user, string docId)
         {
             var now = DateTime.UtcNow;
             tokenHandler = new JwtSecurityTokenHandler();
@@ -91,7 +90,7 @@ namespace com.microsoft.dx.officewopi.Security
                 Subject = new ClaimsIdentity(new[]
                     {
                         new Claim(ClaimTypes.Name, user),
-                        new Claim("container", container),
+                        //new Claim("container", container),
                         new Claim("docid", docId)
                 }),
                 TokenIssuerName = SettingsHelper.Audience,

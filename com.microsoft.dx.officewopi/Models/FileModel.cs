@@ -1,9 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace com.microsoft.dx.officewopi.Models
 {
@@ -34,7 +30,7 @@ namespace com.microsoft.dx.officewopi.Models
         public long Size { get; set; }
 
         [JsonProperty(PropertyName = "Version")]
-        public int Version { get; set; }
+        public string Version { get; set; }
 
         [JsonProperty(PropertyName = "UserInfo")]
         public string UserInfo { get; set; }
