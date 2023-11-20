@@ -7,11 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Newtonsoft.Json.Linq;
+using System.Web.WebPages;
 
 namespace com.microsoft.dx.officewopi.Utils
 {
@@ -28,13 +26,15 @@ namespace com.microsoft.dx.officewopi.Utils
             // Parse the request
             var request = ParseRequest(context.Request);
             HttpResponseMessage response = null;
+            var fileVersion = "1";
 
             try
             {
                 // Lookup the file in the database
-                var itemId = new Guid(request.Id);
-                var file = DocumentDBRepository<DetailedFileModel>.GetItem("Files", i => i.id == itemId);
-                
+                //var itemId = new Guid(request.Id);
+                //var file = DocumentDBRepository<DetailedFileModel>.GetItem("Files", i => i.id == itemId);
+                var file = AzureSQLUtil.GetItem(request.Id);
+
                 // Check for null file
                 if (file == null)
                     response = returnStatus(HttpStatusCode.NotFound, "File Unknown/User Unauthorized");
@@ -51,14 +51,16 @@ namespace com.microsoft.dx.officewopi.Utils
                         file.CloseUrl = String.Format("https://{0}", context.Request.Url.Authority);
                         var view = actions.FirstOrDefault(i => i.ext == fileExt && i.name == "view");
                         if (view != null)
-                            file.HostViewUrl = WopiUtil.GetActionUrl(view, file, context.Request.Url.Authority);
+                            file.HostViewUrl = WopiUtil.GetActionUrl(view, file.id.ToString(), context.Request.Url.Authority);
                         var edit = actions.FirstOrDefault(i => i.ext == fileExt && i.name == "edit");
                         if (edit != null)
-                            file.HostEditUrl = WopiUtil.GetActionUrl(edit, file, context.Request.Url.Authority);
+                            file.HostEditUrl = WopiUtil.GetActionUrl(edit, file.id.ToString(), context.Request.Url.Authority);
 
                         // Get the user from the token (token is already validated)
                         file.UserId = WopiSecurity.GetUserFromToken(request.AccessToken);
-
+                        file.UserFriendlyName = file.BaseFileName;
+                        file.Version = "1";
+                        fileVersion = file.Version;
                         // Call the appropriate handler for the WOPI request we received
                         switch (request.RequestType)
                         {
@@ -112,6 +114,8 @@ namespace com.microsoft.dx.officewopi.Utils
                 // An unknown exception occurred...return 500
                 response = returnStatus(HttpStatusCode.InternalServerError, "Server Error");
             }
+            response.Headers.Add(WopiResponseHeaders.ITEM_VERSION, fileVersion);
+            response.Headers.Add(WopiResponseHeaders.CONTENT_TYPE_OPTIONS, "nosniff");
 
             return response;
         }
@@ -141,8 +145,8 @@ namespace com.microsoft.dx.officewopi.Utils
         /// </remarks>
         private async static Task<HttpResponseMessage> GetFile(this HttpContext context, FileModel file)
         {
-            // Get the file from blob storage
-            var bytes = await AzureStorageUtil.GetFile(file.id.ToString(), file.Container);
+            // Get the file from SQL db
+            var bytes = await AzureSQLUtil.GetBlob(file.id.ToString(), file.OwnerId.ToString().ToLower());
 
             // Write the response and return success 200
             var response = returnStatus(HttpStatusCode.OK, "Success");
@@ -169,7 +173,8 @@ namespace com.microsoft.dx.officewopi.Utils
                 // Update the file with a LockValue and LockExpiration
                 file.LockValue = requestLock;
                 file.LockExpires = DateTime.Now.AddMinutes(30);
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                //await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // Return success 200
                 return returnStatus(HttpStatusCode.OK, "Success");
@@ -178,7 +183,8 @@ namespace com.microsoft.dx.officewopi.Utils
             {
                 // File lock matches existing lock, so refresh lock by extending expiration
                 file.LockExpires = DateTime.Now.AddMinutes(30);
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                //await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // Return success 200
                 HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
@@ -213,7 +219,8 @@ namespace com.microsoft.dx.officewopi.Utils
                 // File lock expired, so clear it out
                 file.LockValue = null;
                 file.LockExpires = null;
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                //await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // File is not locked...return empty X-WOPI-Lock header
                 context.Response.Headers[WopiResponseHeaders.LOCK] = String.Empty;
@@ -253,7 +260,7 @@ namespace com.microsoft.dx.officewopi.Utils
                 // File lock expired, so clear it out
                 file.LockValue = null;
                 file.LockExpires = null;
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // File isn't locked...pass empty Lock in mismatch response
                 return context.returnLockMismatch(String.Empty, "File isn't locked");
@@ -267,7 +274,7 @@ namespace com.microsoft.dx.officewopi.Utils
             {
                 // Extend the expiration
                 file.LockExpires = DateTime.Now.AddMinutes(30);
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // Return success 200
                 return returnStatus(HttpStatusCode.OK, "Success");
@@ -296,7 +303,7 @@ namespace com.microsoft.dx.officewopi.Utils
                 // File lock expired, so clear it out
                 file.LockValue = null;
                 file.LockExpires = null;
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // File isn't locked...pass empty Lock in mismatch response
                 return context.returnLockMismatch(String.Empty, "File isn't locked");
@@ -311,7 +318,7 @@ namespace com.microsoft.dx.officewopi.Utils
                 // Unlock the file
                 file.LockValue = null;
                 file.LockExpires = null;
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // Return success 200
                 return returnStatus(HttpStatusCode.OK, "Success");
@@ -341,7 +348,8 @@ namespace com.microsoft.dx.officewopi.Utils
                 // File lock expired, so clear it out
                 file.LockValue = null;
                 file.LockExpires = null;
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                //await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // File isn't locked...pass empty Lock in mismatch response
                 return context.returnLockMismatch(String.Empty, "File isn't locked");
@@ -356,7 +364,8 @@ namespace com.microsoft.dx.officewopi.Utils
                 // Update the file with a LockValue and LockExpiration
                 file.LockValue = requestLock;
                 file.LockExpires = DateTime.Now.AddMinutes(30);
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                //await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // Return success 200
                 return returnStatus(HttpStatusCode.OK, "Success");
@@ -380,15 +389,17 @@ namespace com.microsoft.dx.officewopi.Utils
                 // If the file is 0 bytes, this is document creation
                 if (context.Request.InputStream.Length == 0)
                 {
-                    // Update the file in blob storage
+                    // Update the file in sql db
                     var bytes = new byte[context.Request.InputStream.Length];
                     context.Request.InputStream.Read(bytes, 0, bytes.Length);
                     file.Size = bytes.Length;
-                    await AzureStorageUtil.UploadFile(file.id.ToString(), file.Container, bytes);
+                   await AzureSQLUtil.UploadFile(file.id.ToString(), bytes, file.BaseFileName, file.OwnerId.ToString().ToLower(), file.Version.ToString());
 
                     // Update version
-                    file.Version++;
-                    await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                    int temp = file.Version.AsInt();
+                    temp++;
+                    file.Version = temp.ToString();
+                    await AzureSQLUtil.UpdateItem(file);
 
                     // Return success 200
                     return returnStatus(HttpStatusCode.OK, "Success");
@@ -404,7 +415,7 @@ namespace com.microsoft.dx.officewopi.Utils
                 // File lock expired, so clear it out
                 file.LockValue = null;
                 file.LockExpires = null;
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                await AzureSQLUtil.UpdateItem(file);
 
                 // File isn't locked...pass empty Lock in mismatch response
                 return context.returnLockMismatch(String.Empty, "File isn't locked");
@@ -420,11 +431,13 @@ namespace com.microsoft.dx.officewopi.Utils
                 var bytes = new byte[context.Request.InputStream.Length];
                 context.Request.InputStream.Read(bytes, 0, bytes.Length);
                 file.Size = bytes.Length;
-                await AzureStorageUtil.UploadFile(file.id.ToString(), file.Container, bytes);
 
                 // Update version
-                file.Version++;
-                await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                int temp = file.Version.AsInt();
+                temp++;
+                file.Version = temp.ToString();
+
+                await AzureSQLUtil.UploadFile(file.id.ToString(), bytes, file.BaseFileName, file.OwnerId.ToString().ToLower(), file.Version.ToString());
 
                 // Return success 200
                 return returnStatus(HttpStatusCode.OK, "Success");
@@ -471,21 +484,22 @@ namespace com.microsoft.dx.officewopi.Utils
                     BaseFileName = fileName,
                     Size = context.Request.InputStream.Length,
                     Container = file.Container,
-                    Version = 1
+                    Version = "1"
                 };
 
                 // First stream the file into blob storage
                 var stream = context.Request.InputStream;
                 var bytes = new byte[stream.Length];
                 await stream.ReadAsync(bytes, 0, (int)stream.Length);
-                var id = await Utils.AzureStorageUtil.UploadFile(newFile.id.ToString(), newFile.Container, bytes);
+                //var id = await Utils.AzureStorageUtil.UploadFile(newFile.id.ToString(), newFile.Container, bytes);
+                await AzureSQLUtil.UploadFile(file.id.ToString(), bytes, file.BaseFileName, file.OwnerId.ToString().ToLower(), file.Version.ToString());
 
                 // Write the details into documentDB
-                await DocumentDBRepository<FileModel>.CreateItemAsync("Files", (FileModel)newFile);
+                //await DocumentDBRepository<FileModel>.CreateItemAsync("Files", (FileModel)newFile);
 
                 // Get access token for the new file
                 WopiSecurity security = new WopiSecurity();
-                var token = security.GenerateToken(newFile.OwnerId, newFile.Container, newFile.id.ToString());
+                var token = security.GenerateToken(newFile.OwnerId, newFile.id.ToString());
                 var tokenStr = security.WriteToken(token);
 
                 // Prepare the Json response
@@ -496,10 +510,10 @@ namespace com.microsoft.dx.officewopi.Utils
                 var fileExt = newFile.BaseFileName.Substring(newFile.BaseFileName.LastIndexOf('.') + 1).ToLower();
                 var view = actions.FirstOrDefault(i => i.ext == fileExt && i.name == "view");
                 if (view != null)
-                    json += String.Format(", 'HostViewUrl': '{0}'", WopiUtil.GetActionUrl(view, newFile, context.Request.Url.Authority));
+                    json += String.Format(", 'HostViewUrl': '{0}'", WopiUtil.GetActionUrl(view, newFile.id.ToString(), context.Request.Url.Authority));
                 var edit = actions.FirstOrDefault(i => i.ext == fileExt && i.name == "edit");
                 if (edit != null)
-                    json += String.Format(", 'HostEditUrl': '{0}'", WopiUtil.GetActionUrl(edit, newFile, context.Request.Url.Authority));
+                    json += String.Format(", 'HostEditUrl': '{0}'", WopiUtil.GetActionUrl(edit, newFile.id.ToString(), context.Request.Url.Authority));
                 json += " }";
 
                 // Write the response and return a success 200
@@ -539,7 +553,8 @@ namespace com.microsoft.dx.officewopi.Utils
                     file.LockValue = requestLock;
                     file.LockExpires = DateTime.Now.AddMinutes(30);
                     file.BaseFileName = newFileName;
-                    await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                    //await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                    await AzureSQLUtil.UpdateItem(file);
 
                     // Return success 200
                     return returnStatus(HttpStatusCode.OK, "Success");
@@ -549,7 +564,8 @@ namespace com.microsoft.dx.officewopi.Utils
                     // File lock matches existing lock, so we can change the name
                     file.LockExpires = DateTime.Now.AddMinutes(30);
                     file.BaseFileName = newFileName;
-                    await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                    //await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+                    await AzureSQLUtil.UpdateItem(file);
 
                     // Return success 200
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
@@ -583,7 +599,8 @@ namespace com.microsoft.dx.officewopi.Utils
             file.UserInfo = System.Text.Encoding.UTF8.GetString(bytes);
 
             // Update the file in DocumentDB
-            await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+            //await DocumentDBRepository<FileModel>.UpdateItemAsync("Files", file.id.ToString(), (FileModel)file);
+            await AzureSQLUtil.UpdateItem(file);
 
             // Return success
             return returnStatus(HttpStatusCode.OK, "Success");
@@ -731,6 +748,7 @@ namespace com.microsoft.dx.officewopi.Utils
         {
             var response = returnStatus(HttpStatusCode.Conflict, "Lock mismatch/Locked by another interface");
             response.Headers.Add(WopiResponseHeaders.LOCK, existingLock ?? String.Empty);
+            
             if (!String.IsNullOrEmpty(reason))
             {
                 response.Headers.Add(WopiResponseHeaders.LOCK_FAILURE_REASON, reason);

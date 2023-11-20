@@ -108,7 +108,7 @@ namespace com.microsoft.dx.officewopi.Utils
         /// <summary>
         /// Forms the correct action url for the file and host
         /// </summary>
-        public static string GetActionUrl(WopiAction action, FileModel file, string authority)
+        public static string GetActionUrl(WopiAction action, string fileID, string authority)
         {
             // Initialize the urlsrc
             var urlsrc = action.urlsrc;
@@ -132,7 +132,7 @@ namespace com.microsoft.dx.officewopi.Utils
             }
 
             // Add the WOPISrc to the end of the request
-            urlsrc += ((phCnt > 0) ? "" : "?") + String.Format("WOPISrc=https://{0}/wopi/files/{1}", authority, file.id.ToString());
+            urlsrc += ((phCnt > 0) ? "" : "?") + String.Format("wopisrc=https://{0}/wopi/files/{1}", authority, fileID);
             return urlsrc;
         }
 
@@ -266,6 +266,8 @@ namespace com.microsoft.dx.officewopi.Utils
         public const string SERVER_ERROR = "X-WOPI-ServerError";
         public const string SERVER_VERSION = "X-WOPI-ServerVersion";
         public const string VALID_RELATIVE_TARGET = "X-WOPI-ValidRelativeTarget";
+        public const string ITEM_VERSION = "X-WOPI-ItemVersion";
+        public const string CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
     }
 
     /// <summary>
@@ -301,7 +303,9 @@ namespace com.microsoft.dx.officewopi.Utils
     {
         public static List<string> Placeholders = new List<string>() { BUSINESS_USER,
             DC_LLCC, DISABLE_ASYNC, DISABLE_CHAT, DISABLE_BROADCAST,
-            EMBDDED, FULLSCREEN, PERFSTATS, RECORDING, THEME_ID, UI_LLCC, VALIDATOR_TEST_CATEGORY
+            EMBDDED, FULLSCREEN, PERFSTATS, RECORDING, THEME_ID, UI_LLCC, 
+            VALIDATOR_TEST_CATEGORY,WOPI_SOURCE,ACTIVITY_NAVIGATION_ID,
+            HOST_SESSION_ID,SESSION_CONTEXT
         };
         public const string BUSINESS_USER = "<IsLicensedUser=BUSINESS_USER&>";
         public const string DC_LLCC = "<rs=DC_LLCC&>";
@@ -315,6 +319,14 @@ namespace com.microsoft.dx.officewopi.Utils
         public const string THEME_ID = "<thm=THEME_ID&>";
         public const string UI_LLCC = "<ui=UI_LLCC&>";
         public const string VALIDATOR_TEST_CATEGORY = "<testcategory=VALIDATOR_TEST_CATEGORY>";
+
+        public const string WOPI_SOURCE = "<wopisrc=WOPI_SOURCE&>";
+        public const string ACTIVITY_NAVIGATION_ID = "<actnavid=ACTIVITY_NAVIGATION_ID&>";
+        public const string HOST_SESSION_ID = "<hid=HOST_SESSION_ID&>";
+        public const string SESSION_CONTEXT = "<sc=SESSION_CONTEXT&>";
+
+
+
 
         /// <summary>
         /// Sets a specific WOPI URL placeholder with the correct value

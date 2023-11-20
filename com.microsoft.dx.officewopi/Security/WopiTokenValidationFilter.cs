@@ -1,14 +1,9 @@
-﻿using com.microsoft.dx.officewopi.Models;
-using com.microsoft.dx.officewopi.Models.Wopi;
+﻿using com.microsoft.dx.officewopi.Models.Wopi;
 using com.microsoft.dx.officewopi.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
 
 namespace com.microsoft.dx.officewopi.Security
 {
@@ -35,8 +30,9 @@ namespace com.microsoft.dx.officewopi.Security
                 };
                 
                 // Get the requested file from Document DB
-                var itemId = new Guid(requestData.Id);
-                var file = DocumentDBRepository<DetailedFileModel>.GetItem("Files", i => i.id == itemId);
+                //var itemId = new Guid(requestData.Id);
+                //var file = DocumentDBRepository<DetailedFileModel>.GetItem("Files", i => i.id == itemId);
+                var file = AzureSQLUtil.GetItem(requestData.Id);
 
                 // Check for missing file
                 if (file == null)
