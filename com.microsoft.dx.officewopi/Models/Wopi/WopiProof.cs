@@ -1,4 +1,4 @@
-﻿namespace com.microsoft.dx.officewopi.Models.Wopi
+﻿namespace com.chalkline.wopi.Models.Wopi
 {
     /// <summary>
     /// Represents the WOPI Proof details returned in WOPI Discovery

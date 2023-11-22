@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace com.microsoft.dx.officewopi
+namespace com.chalkline.wopi
 {
     public class BundleConfig
     {

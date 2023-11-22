@@ -1,11 +1,11 @@
-﻿using com.microsoft.dx.officewopi.Models.Wopi;
-using com.microsoft.dx.officewopi.Utils;
+﻿using com.chalkline.wopi.Models.Wopi;
+using com.chalkline.wopi.Utils;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 
-namespace com.microsoft.dx.officewopi.Security
+namespace com.chalkline.wopi.Security
 {
     public class WopiTokenValidationFilter : AuthorizeAttribute
     {

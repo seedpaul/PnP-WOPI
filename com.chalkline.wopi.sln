@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34302.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.microsoft.dx.officewopi", "com.microsoft.dx.officewopi\com.microsoft.dx.officewopi.csproj", "{2321459D-DBA1-45FA-8D9F-B579E7FCE91F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.chalkline.wopi", "com.microsoft.dx.officewopi\com.chalkline.wopi.csproj", "{2321459D-DBA1-45FA-8D9F-B579E7FCE91F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

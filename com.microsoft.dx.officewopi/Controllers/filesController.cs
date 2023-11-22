@@ -2,11 +2,11 @@
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
-using com.microsoft.dx.officewopi.Utils;
+using com.chalkline.wopi.Utils;
 using System.Threading.Tasks;
-using com.microsoft.dx.officewopi.Security;
+using com.chalkline.wopi.Security;
 
-namespace com.microsoft.dx.officewopi.Controllers
+namespace com.chalkline.wopi.Controllers
 {
     [WopiTokenValidationFilter]
     public class filesController : ApiController

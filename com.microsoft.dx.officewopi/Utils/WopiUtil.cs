@@ -1,5 +1,5 @@
-﻿using com.microsoft.dx.officewopi.Models;
-using com.microsoft.dx.officewopi.Models.Wopi;
+﻿using com.chalkline.wopi.Models;
+using com.chalkline.wopi.Models.Wopi;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
 
-namespace com.microsoft.dx.officewopi.Utils
+namespace com.chalkline.wopi.Utils
 {
     public static class WopiUtil
     {

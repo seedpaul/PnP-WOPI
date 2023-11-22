@@ -1,7 +1,7 @@
 ﻿using Owin;
 using Microsoft.IdentityModel.Logging;
 
-namespace com.microsoft.dx.officewopi
+namespace com.chalkline.wopi
 {
     public partial class Startup
     {

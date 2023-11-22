@@ -1,4 +1,4 @@
-﻿namespace com.microsoft.dx.officewopi.Models.Wopi
+﻿namespace com.chalkline.wopi.Models.Wopi
 {
     /// <summary>
     /// Represents the base information determined at the beginning of a WOPI request

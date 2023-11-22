@@ -1,4 +1,4 @@
-﻿using com.microsoft.dx.officewopi.Models;
+﻿using com.chalkline.wopi.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlTypes;
 
-namespace com.microsoft.dx.officewopi.Utils
+namespace com.chalkline.wopi.Utils
 {
     public class AzureSQLUtil
     {

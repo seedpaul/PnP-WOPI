@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Configuration;
 
-namespace com.microsoft.dx.officewopi.Utils
+namespace com.chalkline.wopi.Utils
 {
     public class SettingsHelper
     {

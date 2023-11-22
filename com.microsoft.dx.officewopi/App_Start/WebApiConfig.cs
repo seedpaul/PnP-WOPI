@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace com.microsoft.dx.officewopi
+namespace com.chalkline.wopi
 {
     public static class WebApiConfig
     {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace com.microsoft.dx.officewopi.Models
+namespace com.chalkline.wopi.Models
 {
     /// <summary>
     /// This class contains the file properties that are persisted in DocumentDB

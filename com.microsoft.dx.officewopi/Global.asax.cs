@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
-namespace com.microsoft.dx.officewopi
+namespace com.chalkline.wopi
 {
     public class MvcApplication : System.Web.HttpApplication
     {

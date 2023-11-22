@@ -5,11 +5,11 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
 using System.Threading.Tasks;
-using com.microsoft.dx.officewopi.Utils;
+using com.chalkline.wopi.Utils;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.IdentityModel.Claims;
 
-namespace com.microsoft.dx.officewopi
+namespace com.chalkline.wopi
 {
     public partial class Startup
     {

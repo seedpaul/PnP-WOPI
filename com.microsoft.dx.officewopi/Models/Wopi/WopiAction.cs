@@ -1,4 +1,4 @@
-﻿namespace com.microsoft.dx.officewopi.Models.Wopi
+﻿namespace com.chalkline.wopi.Models.Wopi
 {
     /// <summary>
     /// Represented the valid WOPI actions from WOPI Discovery

@@ -1,8 +1,8 @@
-﻿using com.microsoft.dx.officewopi.Models.Wopi;
+﻿using com.chalkline.wopi.Models.Wopi;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace com.microsoft.dx.officewopi.Models
+namespace com.chalkline.wopi.Models
 {
     /// <summary>
     /// This class contains additional file properties that are used in 

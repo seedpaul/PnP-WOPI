@@ -1,6 +1,6 @@
-﻿using com.microsoft.dx.officewopi.Models;
-using com.microsoft.dx.officewopi.Models.Wopi;
-using com.microsoft.dx.officewopi.Security;
+﻿using com.chalkline.wopi.Models;
+using com.chalkline.wopi.Models.Wopi;
+using com.chalkline.wopi.Security;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.WebPages;
 
-namespace com.microsoft.dx.officewopi.Utils
+namespace com.chalkline.wopi.Utils
 {
     /// <summary>
     /// Provides processing extensions for each of the WOPI operations

@@ -1,7 +1,7 @@
-﻿using com.microsoft.dx.officewopi.Models;
-using com.microsoft.dx.officewopi.Models.Wopi;
-using com.microsoft.dx.officewopi.Security;
-using com.microsoft.dx.officewopi.Utils;
+﻿using com.chalkline.wopi.Models;
+using com.chalkline.wopi.Models.Wopi;
+using com.chalkline.wopi.Security;
+using com.chalkline.wopi.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace com.microsoft.dx.officewopi.Controllers
+namespace com.chalkline.wopi.Controllers
 {
     [Authorize]
     public class HomeController : Controller

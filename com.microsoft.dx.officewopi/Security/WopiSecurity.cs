@@ -1,4 +1,4 @@
-﻿using com.microsoft.dx.officewopi.Utils;
+﻿using com.chalkline.wopi.Utils;
 using System;
 using System.Configuration;
 using System.IdentityModel.Protocols.WSTrust;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
-namespace com.microsoft.dx.officewopi.Security
+namespace com.chalkline.wopi.Security
 {
     /// <summary>
     /// Class handles token generation and validation for the WOPI host
