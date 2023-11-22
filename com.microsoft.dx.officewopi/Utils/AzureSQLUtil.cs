@@ -1,11 +1,11 @@
 ﻿using com.chalkline.wopi.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Configuration;
-using System.Threading.Tasks;
 using System.Data;
+using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Threading.Tasks;
 
 namespace com.chalkline.wopi.Utils
 {
@@ -65,7 +65,7 @@ namespace com.chalkline.wopi.Utils
             return bytes;
         }
 
-        public static async Task UploadFile(string guid, byte[] fileBytes, string fileName, string ownerId,string version)
+        public static async Task UploadFile(string guid, byte[] fileBytes, string fileName, string ownerId, string version)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace com.chalkline.wopi.Utils
                         connection.Open();
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            while(reader.Read())
+                            while (reader.Read())
                             {
                                 // Create the file entity
                                 DetailedFileModel file = new DetailedFileModel()
@@ -180,7 +180,7 @@ namespace com.chalkline.wopi.Utils
                                     LockExpires = reader.IsDBNull(5) ? new DateTime().AddYears(10) : reader.GetDateTime(5),
                                     Size = (long)reader.GetSqlInt64(6)
                                 };
-                                 files.Add(file);
+                                files.Add(file);
                             }
                         }
                     }
@@ -287,7 +287,7 @@ namespace com.chalkline.wopi.Utils
                         command.Parameters.Add("@version", System.Data.SqlDbType.NVarChar).Value = file.Version;
                         command.Parameters.Add("@lockValue", System.Data.SqlDbType.NVarChar).Value = file.LockValue ?? SqlString.Null;
                         command.Parameters.Add("@lockExpires", System.Data.SqlDbType.DateTime).Value = file.LockExpires ?? SqlDateTime.Null;
-                            ;
+                        ;
                         command.Parameters.Add("@guid", System.Data.SqlDbType.NVarChar).Value = file.id.ToString();
                         command.ExecuteNonQuery();
                     }

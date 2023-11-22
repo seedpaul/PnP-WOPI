@@ -28,7 +28,7 @@ namespace com.chalkline.wopi.Security
                     AccessToken = queryParams["access_token"],
                     Id = actionContext.RequestContext.RouteData.Values["id"].ToString()
                 };
-                
+
                 // Get the requested file from Document DB
                 //var itemId = new Guid(requestData.Id);
                 //var file = DocumentDBRepository<DetailedFileModel>.GetItem("Files", i => i.id == itemId);

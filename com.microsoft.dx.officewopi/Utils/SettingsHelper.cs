@@ -5,11 +5,13 @@ namespace com.chalkline.wopi.Utils
 {
     public class SettingsHelper
     {
-        public static string ClientId {
+        public static string ClientId
+        {
             get { return ConfigurationManager.AppSettings["ida:ClientId"]; }
         }
 
-        public static string ClientSecret {
+        public static string ClientSecret
+        {
             get { return ConfigurationManager.AppSettings["ida:ClientSecret"]; }
         }
 

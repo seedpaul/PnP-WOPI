@@ -1,10 +1,10 @@
-﻿using System;
+﻿using com.chalkline.wopi.Security;
+using com.chalkline.wopi.Utils;
+using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using com.chalkline.wopi.Utils;
-using System.Threading.Tasks;
-using com.chalkline.wopi.Security;
 
 namespace com.chalkline.wopi.Controllers
 {

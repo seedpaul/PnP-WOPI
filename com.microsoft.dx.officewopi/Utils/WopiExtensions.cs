@@ -167,7 +167,7 @@ namespace com.chalkline.wopi.Utils
 
             // Ensure the file isn't already locked or expired
             if (String.IsNullOrEmpty(file.LockValue) ||
-                (file.LockExpires != null && 
+                (file.LockExpires != null &&
                 file.LockExpires < DateTime.Now))
             {
                 // Update the file with a LockValue and LockExpiration
@@ -393,7 +393,7 @@ namespace com.chalkline.wopi.Utils
                     var bytes = new byte[context.Request.InputStream.Length];
                     context.Request.InputStream.Read(bytes, 0, bytes.Length);
                     file.Size = bytes.Length;
-                   await AzureSQLUtil.UploadFile(file.id.ToString(), bytes, file.BaseFileName, file.OwnerId.ToString().ToLower(), file.Version.ToString());
+                    await AzureSQLUtil.UploadFile(file.id.ToString(), bytes, file.BaseFileName, file.OwnerId.ToString().ToLower(), file.Version.ToString());
 
                     // Update version
                     int temp = file.Version.AsInt();
@@ -408,7 +408,7 @@ namespace com.chalkline.wopi.Utils
                 {
                     // File isn't locked...pass empty Lock in mismatch response
                     return context.returnLockMismatch(String.Empty, "File isn't locked");
-                }                
+                }
             }
             else if (file.LockExpires != null && file.LockExpires < DateTime.Now)
             {
@@ -687,24 +687,24 @@ namespace com.chalkline.wopi.Utils
                                 requestData.RequestType = WopiRequestType.PutUserInfo;
                                 break;
 
-                            /*
-                            // The following WOPI_Override values were referenced in the product group sample, but not in the documentation
-                            case "COBALT":
-                                requestData.RequestType = WopiRequestType.ExecuteCobaltRequest;
-                                break;
-                            case "DELETE":
-                                requestData.RequestType = WopiRequestType.DeleteFile;
-                                break;
-                            case "READ_SECURE_STORE":
-                                requestData.RequestType = WopiRequestType.ReadSecureStore;
-                                break;
-                            case "GET_RESTRICTED_LINK":
-                                requestData.RequestType = WopiRequestType.GetRestrictedLink;
-                                break;
-                            case "REVOKE_RESTRICTED_LINK":
-                                requestData.RequestType = WopiRequestType.RevokeRestrictedLink;
-                                break;
-                            */
+                                /*
+                                // The following WOPI_Override values were referenced in the product group sample, but not in the documentation
+                                case "COBALT":
+                                    requestData.RequestType = WopiRequestType.ExecuteCobaltRequest;
+                                    break;
+                                case "DELETE":
+                                    requestData.RequestType = WopiRequestType.DeleteFile;
+                                    break;
+                                case "READ_SECURE_STORE":
+                                    requestData.RequestType = WopiRequestType.ReadSecureStore;
+                                    break;
+                                case "GET_RESTRICTED_LINK":
+                                    requestData.RequestType = WopiRequestType.GetRestrictedLink;
+                                    break;
+                                case "REVOKE_RESTRICTED_LINK":
+                                    requestData.RequestType = WopiRequestType.RevokeRestrictedLink;
+                                    break;
+                                */
                         }
                     }
                 }
@@ -748,7 +748,7 @@ namespace com.chalkline.wopi.Utils
         {
             var response = returnStatus(HttpStatusCode.Conflict, "Lock mismatch/Locked by another interface");
             response.Headers.Add(WopiResponseHeaders.LOCK, existingLock ?? String.Empty);
-            
+
             if (!String.IsNullOrEmpty(reason))
             {
                 response.Headers.Add(WopiResponseHeaders.LOCK_FAILURE_REASON, reason);

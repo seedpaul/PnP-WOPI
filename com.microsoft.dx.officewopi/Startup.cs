@@ -1,5 +1,5 @@
-﻿using Owin;
-using Microsoft.IdentityModel.Logging;
+﻿using Microsoft.IdentityModel.Logging;
+using Owin;
 
 namespace com.chalkline.wopi
 {

@@ -303,7 +303,7 @@ namespace com.chalkline.wopi.Utils
     {
         public static List<string> Placeholders = new List<string>() { BUSINESS_USER,
             DC_LLCC, DISABLE_ASYNC, DISABLE_CHAT, DISABLE_BROADCAST,
-            EMBDDED, FULLSCREEN, PERFSTATS, RECORDING, THEME_ID, UI_LLCC, 
+            EMBDDED, FULLSCREEN, PERFSTATS, RECORDING, THEME_ID, UI_LLCC,
             VALIDATOR_TEST_CATEGORY,WOPI_SOURCE,ACTIVITY_NAVIGATION_ID,
             HOST_SESSION_ID,SESSION_CONTEXT
         };

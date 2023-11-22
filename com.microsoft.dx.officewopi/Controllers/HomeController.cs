@@ -42,7 +42,7 @@ namespace com.chalkline.wopi.Controllers
                 return RedirectToAction("Error", "Home", new { error = "No action provided" });
 
             // Get the specific file from SQLDB
-             var fileBlob = AzureSQLUtil.GetBlob(id.ToString(), User.Identity.Name.ToLower());
+            var fileBlob = AzureSQLUtil.GetBlob(id.ToString(), User.Identity.Name.ToLower());
 
             // Check for null file
             if (fileBlob == null)
@@ -99,7 +99,7 @@ namespace com.chalkline.wopi.Controllers
                 var stream = Request.InputStream;
                 var bytes = new byte[stream.Length];
                 await stream.ReadAsync(bytes, 0, (int)stream.Length);
-                await AzureSQLUtil.UploadFile(file.id.ToString(), bytes, file.BaseFileName, User.Identity.Name.ToLower(),"1");
+                await AzureSQLUtil.UploadFile(file.id.ToString(), bytes, file.BaseFileName, User.Identity.Name.ToLower(), "1");
 
                 // Return json representation of information
                 return Json(new { success = true, file = file });
