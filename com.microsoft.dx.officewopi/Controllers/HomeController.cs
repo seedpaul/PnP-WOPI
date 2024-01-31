@@ -41,12 +41,12 @@ namespace com.chalkline.wopi.Controllers
             if (String.IsNullOrEmpty(Request["action"]))
                 return RedirectToAction("Error", "Home", new { error = "No action provided" });
 
-            // Get the specific file from SQLDB
-            var fileBlob = AzureSQLUtil.GetBlob(id.ToString(), User.Identity.Name.ToLower());
+            //// Get the specific file from SQLDB
+            //var fileBlob = AzureSQLUtil.GetBlob(id.ToString(), User.Identity.Name.ToLower());
 
-            // Check for null file
-            if (fileBlob == null)
-                return RedirectToAction("Error", "Home", new { error = "Files does not exist" });
+            //// Check for null file
+            //if (fileBlob == null)
+            //    return RedirectToAction("Error", "Home", new { error = "Files does not exist" });
 
             // Use discovery to determine endpoint to leverage
             List<WopiAction> discoData = await WopiUtil.GetDiscoveryInfo();

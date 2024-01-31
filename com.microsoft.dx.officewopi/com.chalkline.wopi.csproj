@@ -13,8 +13,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>com.microsoft.dx.officewopi</RootNamespace>
-    <AssemblyName>com.microsoft.dx.officewopi</AssemblyName>
+    <RootNamespace>com.chalkline.wopi</RootNamespace>
+    <AssemblyName>com.chalkline.wopi</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -26,8 +26,9 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
-    <Use64BitIISExpress />
+    <Use64BitIISExpress>false</Use64BitIISExpress>
     <TargetFrameworkProfile />
+    <_MigrateToProjectGuid>4f01f905-f27b-4487-b2dd-8dea8c8dddfc</_MigrateToProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -253,8 +254,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\PublishProfiles\commicrosoftdxofficewopi20231018113233 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\officewopi - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\officewopi - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\filedrop-min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
