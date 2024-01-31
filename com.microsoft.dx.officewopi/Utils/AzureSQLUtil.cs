@@ -32,7 +32,8 @@ namespace com.chalkline.wopi.Utils
                     System.Diagnostics.Trace.WriteLine("Query data example:");
                     System.Diagnostics.Trace.WriteLine("=========================================\n");
 
-                    String sql = "SELECT fileName, convert(nvarchar(50), guid) AS guid, blob FROM dbo.files WHERE guid = @guid AND OwnerID = @ownerId";
+                    //String sql = "SELECT fileName, convert(nvarchar(50), guid) AS guid, blob FROM dbo.files WHERE guid = @guid AND OwnerID = @ownerId";
+                    String sql = "SELECT fileName, convert(nvarchar(50), guid) AS guid, blob FROM dbo.files WHERE guid = @guid";
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
@@ -158,12 +159,15 @@ namespace com.chalkline.wopi.Utils
 
                 using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
                 {
+                    //string sql = "SELECT GUID, OwnerId, FileName, Version, LockValue, LockExpires,";
+                    //sql += " DATALENGTH(Blob) AS Bytes FROM dbo.Files WHERE OwnerId = @OwnerId Order by FileName ASC";
+
                     string sql = "SELECT GUID, OwnerId, FileName, Version, LockValue, LockExpires,";
-                    sql += " DATALENGTH(Blob) AS Bytes FROM dbo.Files WHERE OwnerId = @OwnerId Order by FileName ASC";
+                    sql += " DATALENGTH(Blob) AS Bytes FROM dbo.Files Order by FileName ASC";
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.Add("@OwnerId", System.Data.SqlDbType.NVarChar).Value = ownerId;
+                        //command.Parameters.Add("@OwnerId", System.Data.SqlDbType.NVarChar).Value = ownerId;
                         connection.Open();
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
